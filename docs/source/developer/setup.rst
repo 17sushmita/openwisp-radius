@@ -301,6 +301,9 @@ Launch development server:
 
 You can access the admin interface at http://127.0.0.1:8000/admin/.
 
+Login to the admin interface and update the domain name of your `site` to the domain
+on which this application is running. From above, it should `127.0.0.1:8000`.
+
 Run tests with:
 
 .. code-block:: shell

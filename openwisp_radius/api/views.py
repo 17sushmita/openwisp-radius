@@ -11,6 +11,7 @@ from dj_rest_auth.views import PasswordResetView as BasePasswordResetView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
@@ -715,10 +716,15 @@ class PasswordResetView(DispatchOrgMixin, BasePasswordResetView):
         else:
             organization_pk = self.organization.pk
             organization_slug = self.organization.slug
+        options = {
+            'organization': organization_slug,
+            'uid': uid,
+            'token': token,
+        }
+        if len(password_reset_urls.keys()) == 1:
+            options.update({'domain': get_current_site(self.request).domain})
         password_reset_url = password_reset_urls.get(str(organization_pk), default_url)
-        password_reset_url = password_reset_url.format(
-            organization=organization_slug, uid=uid, token=token
-        )
+        password_reset_url = password_reset_url.format(**options)
         context = {'request': self.request, 'password_reset_url': password_reset_url}
         return context
 
